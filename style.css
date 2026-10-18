@@ -14,13 +14,10 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke
 .top-r{display:flex;align-items:center;gap:10px}
 .privacy{display:flex;align-items:center;gap:6px;font-size:13px;color:#2f6a4f;background:#e6f0ea;padding:5px 10px;border-radius:99px;white-space:nowrap}
 .privacy svg{width:14px;height:14px}
-.usage{white-space:nowrap;background:none;border:0;color:var(--mute);font-size:13px;cursor:pointer;padding:6px 4px;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px;white-space:nowrap;transition:background .12s,border-color .12s}
 .btn:hover{border-color:#c9c5b9;background:#faf9f6}
 .btn.primary{background:var(--dk);border-color:var(--dk);color:#fff;padding:11px 22px;font-size:15px}
 .btn.primary:hover{background:#17211b}
-.btn.pro{border-color:var(--ac);color:var(--ac);font-weight:600;padding:6px 14px}
-.btn.pro.on{background:var(--ac);color:#fff}
 .btn.ghost{background:transparent}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .tabs{grid-area:nav;display:flex;flex-direction:column;gap:4px;align-self:start;position:sticky;top:16px}
@@ -90,7 +87,6 @@ main{grid-area:main;min-width:0;padding-bottom:40px}
 .seg span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:13.5px;background:#fff}
 .seg input:checked+span{border-color:var(--dk);background:var(--sel);font-weight:600}
 .seg input:focus-visible+span{outline:2px solid #d9a99f}
-.tag{font-style:normal;font-size:11px;color:var(--ac);border:1px solid var(--ac);border-radius:4px;padding:0 4px;line-height:16px}
 .pn-wrap{display:grid;grid-template-columns:minmax(200px,300px) 1fr;gap:24px;align-items:start}
 .pn-prev{background:#f3f1ea;border-radius:10px;padding:16px;display:grid;place-items:center;min-height:260px}
 .pv{position:relative;display:inline-block;line-height:0;box-shadow:0 2px 10px rgba(0,0,0,.18);background:#fff}
@@ -109,15 +105,7 @@ input[type=range]{width:100%;accent-color:var(--dk)}
 .result .btn{color:#fff;border-color:#ffffff55}
 .result .btn:hover{background:#ffffff1a}
 .foot{grid-area:foot;color:var(--mute);font-size:12.5px;padding:18px 0 28px;border-top:1px solid var(--line)}
-.modal{position:fixed;inset:0;background:rgba(25,30,27,.45);display:grid;place-items:center;padding:16px;z-index:20}
-.sheet{position:relative;background:#fff;border-radius:14px;padding:24px;width:min(460px,100%);max-height:92vh;overflow:auto}
-.sheet h3{margin:0 0 4px;font-size:19px}
 .x{position:absolute;right:12px;top:10px;width:34px;height:34px;border:0;background:none;font-size:26px;cursor:pointer;color:var(--mute)}
-.cmp{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px}
-.cmp th,.cmp td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
-.cmp th{color:var(--mute);font-weight:500;font-size:13px}
-.cmp td:last-child{color:var(--ac);font-weight:600}
-.state{background:#e6f0ea;color:#2f6a4f;border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
 .busy{position:fixed;inset:0;background:rgba(244,242,236,.7);display:grid;place-items:center;z-index:30}
 .busy>div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 20px;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.1)}
 .spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--ac);border-radius:50%;animation:sp .8s linear infinite}
@@ -128,8 +116,7 @@ input[type=range]{width:100%;accent-color:var(--dk)}
  .top{padding:12px 0;margin-bottom:14px}
  .brand .sub,.privacy span{display:none}
  .privacy{padding:6px}
- .usage{font-size:12px}
- .tabs{position:fixed;left:0;right:0;bottom:0;top:auto;flex-direction:row;background:#fbfaf7;border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:0;z-index:10}
+  .tabs{position:fixed;left:0;right:0;bottom:0;top:auto;flex-direction:row;background:#fbfaf7;border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:0;z-index:10}
  .tabs button{flex:1;flex-direction:column;gap:2px;padding:6px 2px;font-size:11.5px;align-items:center;text-align:center;border-radius:8px}
  .tabs button.on{box-shadow:none;background:#efece4}
  .ph h2{font-size:20px}

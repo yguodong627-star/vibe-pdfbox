@@ -4,7 +4,6 @@ var PDFLib=window.PDFLib,pdfjsLib=window.pdfjsLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc='lib/pdf.worker.min.js';
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
-var FREE={bytes:20*1024*1024,daily:10,merge:5,imgs:20};
 var uid=0,nid=function(){return 'i'+(++uid)};
 var I={
  up:'<svg viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></svg>',
@@ -25,36 +24,9 @@ function toast(m){var t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(
 function busy(on,txt){$('#busy').hidden=!on;if(txt)$('#busy-t').textContent=txt}
 function tick(){return new Promise(function(r){setTimeout(r,30)})}
 
-/* ---------- 授权 / 限额 ---------- */
-function ck(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}
- var A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',o='';for(var j=0;j<4;j++){o+=A[h&31];h>>>=5}return o}
-// 占位校验：真实发售时换成服务端签发 + 本地公钥验签。此处不含任何真实密钥。
-function keyOk(k){k=(k||'').trim().toUpperCase();var m=/^PBOX-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4})$/.exec(k);
- return !!m&&ck('PBOX'+m[1]+m[2])===m[3]}
-function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
-function isPro(){return keyOk(ls('pdfbox.key'))}
-function today(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
-function used(){try{var u=JSON.parse(ls('pdfbox.use')||'{}');return u.d===today()?u.n:0}catch(e){return 0}}
-function addUse(){ls('pdfbox.use',JSON.stringify({d:today(),n:used()+1}))}
-function refreshTop(){var p=isPro();$('#proBtn').classList.toggle('on',p);$('#proBtn').textContent=p?'Pro 已解锁':'Pro 解锁';
- $('#usage').textContent=p?'不限次数':'今日剩余 '+Math.max(0,FREE.daily-used())+'/'+FREE.daily;$('#usage').hidden=false}
-function openPro(why){$('#m-why').textContent=why||'解除免费版限制，适合经常处理文件的人。';var p=isPro();
- $('#m-state').hidden=!p;$('#m-form').hidden=p;$('#m-msg').textContent='';$('#m-key').value='';$('#modal').hidden=false;if(!p)setTimeout(function(){$('#m-key').focus()},50)}
-function closePro(){$('#modal').hidden=true}
-$('#proBtn').onclick=$('#usage').onclick=function(){openPro()};
-$('#m-x').onclick=closePro;
-$('#modal').addEventListener('mousedown',function(e){if(e.target===this)closePro()});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closePro()});
-$('#m-ok').onclick=function(){var k=$('#m-key').value;if(keyOk(k)){ls('pdfbox.key',k.trim().toUpperCase());refreshTop();closePro();toast('已解锁 Pro')}else $('#m-msg').textContent='授权码不正确，请检查后重试'};
-$('#m-key').addEventListener('keydown',function(e){if(e.key==='Enter')$('#m-ok').click()});
-$('#m-off').onclick=function(){ls('pdfbox.key',null);refreshTop();closePro();toast('已移除授权码')};
-function needQuota(){if(isPro())return true;if(used()>=FREE.daily){openPro('今天的 '+FREE.daily+' 次免费导出已用完，明天自动恢复，或解锁 Pro 不限次数。');return false}return true}
-function needPro(why){if(isPro())return true;openPro(why);return false}
-
 /* ---------- 文件读取 ---------- */
 function readBuf(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){rej(new Error('读取失败'))};r.readAsArrayBuffer(f)})}
 async function loadPdfFile(f){
- if(!isPro()&&f.size>FREE.bytes){openPro('「'+f.name+'」有 '+fmtSize(f.size)+'，免费版单文件限 20MB。');return null}
  var buf=await readBuf(f),doc;
  try{doc=await PDFLib.PDFDocument.load(buf)}catch(e){
   toast(/encrypt/i.test(e.message||e.name||'')?'「'+f.name+'」有密码保护，暂不支持':'「'+f.name+'」打开失败，可能不是有效的 PDF');return null}
@@ -102,7 +74,7 @@ function deliver(bytes,name,mime,desc){
  var a=document.createElement('a');a.href=lastUrl;a.download=name;document.body.appendChild(a);a.click();a.remove();
  var r=$('#result');r.hidden=false;$('#result-t').textContent=name+' · '+(desc?desc+' · ':'')+fmtSize(blob.size);
  var b=$('#result-a');b.href=lastUrl;b.download=name;
- addUse();refreshTop();
+
 }
 var crcT=(function(){var t=[];for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
 function crc32(u){var c=0xFFFFFFFF;for(var i=0;i<u.length;i++)c=crcT[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
@@ -165,7 +137,6 @@ async function mAdd(files){
  files=pickPdfs(files);if(!files.length)return;
  busy(true,'读取文件…');await tick();
  try{for(var f of files){
-  if(!isPro()&&M.items.length>=FREE.merge){openPro('免费版一次最多合并 '+FREE.merge+' 个文件，其余的没有加入。');break}
   var it=await loadPdfFile(f);if(!it)continue;M.items.push(it);
   try{var d=await pdfjsDoc(it.buf),c=document.createElement('canvas');await drawPage(d,1,c,90);it.thumb=c;d.destroy()}catch(e){}
  }}finally{busy(false)}
@@ -177,7 +148,7 @@ $('#merge-list').addEventListener('click',function(e){var b=e.target.closest('bu
 sortable($('#merge-list'),'.row',function(ids){M.items=reorder(M.items,ids);mRender()});
 $('[data-act=clear]',mSec).onclick=function(){M.items=[];mRender()};
 $('#merge-go').onclick=async function(){
- if(!needQuota())return;busy(true,'合并中…');await tick();
+ busy(true,'合并中…');await tick();
  try{var out=await PDFLib.PDFDocument.create(),n=0;
   for(var it of M.items){var d=await PDFLib.PDFDocument.load(it.buf),ps=await out.copyPages(d,d.getPageIndices());ps.forEach(function(p){out.addPage(p);n++})}
   var bytes=await out.save();deliver(bytes,'合并-'+M.items.length+'个文件.pdf',null,n+' 页');
@@ -222,11 +193,10 @@ $$('#p-split .chips button').forEach(function(b){b.onclick=function(){var n=S.f.
  for(var i=1;i<=n;i++)if(q==='all'||(q==='odd'&&i%2)||(q==='even'&&i%2===0))S.sel.add(i);sSync(false)}});
 $('[data-act=clear]',sSec).onclick=function(){S.f=null;show(sSec,false)};
 function sMode(){return $('input[name=smode]:checked').value}
-$('#split-mode').addEventListener('change',function(){var m=sMode();$('#split-go').textContent=m==='one'?'提取并下载':'拆分并打包 ZIP';
- if(m!=='one'&&!isPro()){$('input[value=one]').checked=true;$('#split-go').textContent='提取并下载';openPro('按范围或逐页拆成多个文件、打包下载是 Pro 功能。')}});
+$('#split-mode').addEventListener('change',function(){var m=sMode();$('#split-go').textContent=m==='one'?'提取并下载':'拆分并打包 ZIP';});
 async function extract(src,pages,rotDelta){var out=await PDFLib.PDFDocument.create(),ps=await out.copyPages(src,pages.map(function(p){return p-1}));ps.forEach(function(p){out.addPage(p)});return out.save()}
 $('#split-go').onclick=async function(){
- if(!needQuota())return;var mode=sMode();var r=parseRanges($('#split-range').value,S.f.pages);if(r.err){toast(r.err);return}
+ var mode=sMode();var r=parseRanges($('#split-range').value,S.f.pages);if(r.err){toast(r.err);return}
  busy(true,'处理中…');await tick();
  try{var src=await PDFLib.PDFDocument.load(S.f.buf),b=baseName(S.f.name);
   var sel=[...S.sel].sort(function(a,b){return a-b});
@@ -276,7 +246,7 @@ $('[data-act=rr]',oSec).onclick=function(){O.pages.forEach(function(p){p.rot=(p.
 $('[data-act=reset]',oSec).onclick=function(){O.pages=O.pages.map(function(p){return {id:p.id,src:p.src,rot:0,del:false,canvas:p.canvas}}).sort(function(a,b){return a.src-b.src});oRender()};
 $('[data-act=clear]',oSec).onclick=function(){O.f=null;show(oSec,false)};
 $('#org-go').onclick=async function(){
- if(!needQuota())return;busy(true,'导出中…');await tick();
+ busy(true,'导出中…');await tick();
  try{var src=await PDFLib.PDFDocument.load(O.f.buf),out=await PDFLib.PDFDocument.create(),keep=O.pages.filter(function(p){return !p.del});
   var cps=await out.copyPages(src,keep.map(function(p){return p.src-1}));
   cps.forEach(function(pg,i){var r=keep[i].rot;if(r){var cur=pg.getRotation().angle;pg.setRotation(PDFLib.degrees(((cur+r)%360+360)%360))}out.addPage(pg)});
@@ -302,7 +272,6 @@ function pnPrev(){
 function nInfo(){var f=N.files;$('#pn-info').textContent=f.length===1?f[0].name+' · '+f[0].pages+' 页':f.length+' 个文件（批量）'}
 async function nLoad(files){
  files=pickPdfs(files);if(!files.length)return;
- if(files.length>1&&!isPro()){openPro('批量给多个文件加页码是 Pro 功能，这次只处理第一个。');files=[files[0]]}
  busy(true,'读取文件…');await tick();
  try{var arr=[];for(var f of files){var it=await loadPdfFile(f);if(it)arr.push(it)}if(!arr.length)return;N.files=arr;
   if(N.doc)N.doc.destroy();N.doc=await pdfjsDoc(arr[0].buf);var cv=$('#pn-pv canvas');await drawPage(N.doc,1,cv,300);
@@ -326,7 +295,7 @@ async function stamp(buf,o){
  return {bytes:await doc.save(),pages:total};
 }
 $('#pn-go').onclick=async function(){
- if(!needQuota())return;busy(true,'处理中…');await tick();
+ busy(true,'处理中…');await tick();
  var o={pos:N.pos,fmt:$('#pn-fmt').value,start:Math.max(0,+$('#pn-start').value||0),skip:Math.max(0,+$('#pn-skip').value||0),size:+$('#pn-size').value};
  try{if(N.files.length===1){var f=N.files[0];if(o.skip>=f.pages){toast('跳过的页数不能大于等于总页数');return}var r=await stamp(f.buf,o);deliver(r.bytes,baseName(f.name)+'-页码.pdf',null,r.pages+' 页')}
   else{var out=[];for(var f2 of N.files){if(o.skip>=f2.pages)continue;var r2=await stamp(f2.buf,o);out.push({name:baseName(f2.name)+'-页码.pdf',data:r2.bytes})}await deliverZip(out,'批量页码.zip')}
@@ -346,8 +315,6 @@ function gAdd(files){
  var imgs=files.filter(function(f){return /^image\//.test(f.type)||/\.(jpe?g|png|webp|gif|bmp|avif)$/i.test(f.name)});
  if(imgs.length<files.length)toast('已忽略 '+(files.length-imgs.length)+' 个非图片文件');
  for(var f of imgs){
-  if(!isPro()&&G.items.length>=FREE.imgs){openPro('免费版一次最多 '+FREE.imgs+' 张图片，其余的没有加入。');break}
-  if(!isPro()&&f.size>FREE.bytes){openPro('「'+f.name+'」有 '+fmtSize(f.size)+'，免费版单文件限 20MB。');continue}
   G.items.push({id:nid(),file:f,name:f.name,url:URL.createObjectURL(f)})}
  gRender();
 }
@@ -364,7 +331,7 @@ async function decodeImg(f){ // 解码并按 EXIF 摆正，再转成 PNG/JPEG �
  return {bytes:new Uint8Array(await blob.arrayBuffer()),png:png,w:c.width,h:c.height};
 }
 $('#img-go').onclick=async function(){
- if(!needQuota())return;busy(true,'生成中…');await tick();
+ busy(true,'生成中…');await tick();
  try{var out=await PDFLib.PDFDocument.create(),sz=$('#img-size').value,mg=+$('#img-margin').value;
   for(var it of G.items){var d=await decodeImg(it.file),im=d.png?await out.embedPng(d.bytes):await out.embedJpg(d.bytes),pw,ph;
    if(sz==='fit'){var k=Math.min(1,1600/Math.max(d.w,d.h))*0.75;pw=d.w*k+mg*2;ph=d.h*k+mg*2}
@@ -375,6 +342,6 @@ $('#img-go').onclick=async function(){
  }catch(e){toast('生成失败：'+(e.message||'图片无法解码'))}finally{busy(false)}
 };
 
-refreshTop();
+
 mRender();gRender();
 })();

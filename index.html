@@ -15,8 +15,6 @@
     <div class="brand"><span class="seal">页</span><b>页匠</b><span class="sub">PDF 工具箱</span></div>
     <div class="top-r">
       <span class="privacy" title="所有处理都在本页内完成，没有任何上传请求"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>文件不上传</span>
-      <button id="usage" class="usage" type="button"></button>
-      <button id="proBtn" class="btn pro" type="button">Pro</button>
     </div>
   </header>
 
@@ -33,7 +31,7 @@
     <section class="panel on" id="p-merge">
       <div class="ph"><h2>合并 PDF</h2><p>把几份文件按顺序拼成一份。拖动左侧手柄或点箭头调整先后。</p></div>
       <label class="drop" id="drop-merge"><input type="file" accept="application/pdf,.pdf" multiple>
-        <b>点击选择，或把 PDF 拖到这里</b><span>可多选 · 免费版最多合并 5 个文件</span></label>
+        <b>点击选择，或把 PDF 拖到这里</b><span>可多选 · 合并个数不限</span></label>
       <div class="work" hidden>
         <div class="bar"><span id="merge-info" class="muted"></span><span class="sp"></span>
           <label class="btn ghost addmore">继续添加<input type="file" accept="application/pdf,.pdf" multiple hidden></label>
@@ -47,7 +45,7 @@
     <section class="panel" id="p-split">
       <div class="ph"><h2>拆分 / 提取页面</h2><p>输入页码范围，或直接点缩略图选页。</p></div>
       <label class="drop" id="drop-split"><input type="file" accept="application/pdf,.pdf">
-        <b>点击选择，或把 PDF 拖到这里</b><span>单个文件 · 20MB 以内</span></label>
+        <b>点击选择，或把 PDF 拖到这里</b><span>单个文件</span></label>
       <div class="work" hidden>
         <div class="bar"><span id="split-info" class="muted"></span><span class="sp"></span>
           <button class="btn ghost" data-act="clear" type="button">换一个文件</button></div>
@@ -57,8 +55,8 @@
         </div>
         <div class="seg" id="split-mode">
           <label><input type="radio" name="smode" value="one" checked><span>所选页合成一个文件</span></label>
-          <label><input type="radio" name="smode" value="ranges"><span>每个范围单独成文件 <i class="tag">Pro</i></span></label>
-          <label><input type="radio" name="smode" value="each"><span>每页一个文件 <i class="tag">Pro</i></span></label>
+          <label><input type="radio" name="smode" value="ranges"><span>每个范围单独成文件</span></label>
+          <label><input type="radio" name="smode" value="each"><span>每页一个文件</span></label>
         </div>
         <div class="grid sm" id="split-grid"></div>
         <div class="actions"><span id="split-sel" class="muted"></span><button class="btn primary" id="split-go" type="button">提取并下载</button></div>
@@ -69,7 +67,7 @@
     <section class="panel" id="p-organize">
       <div class="ph"><h2>整理页面</h2><p>旋转、删除、拖拽调整顺序，所见即所得。</p></div>
       <label class="drop" id="drop-organize"><input type="file" accept="application/pdf,.pdf">
-        <b>点击选择，或把 PDF 拖到这里</b><span>单个文件 · 20MB 以内</span></label>
+        <b>点击选择，或把 PDF 拖到这里</b><span>单个文件</span></label>
       <div class="work" hidden>
         <div class="bar"><span id="org-info" class="muted"></span><span class="sp"></span>
           <button class="btn ghost" data-act="rl" type="button">全部左转</button>
@@ -85,7 +83,7 @@
     <section class="panel" id="p-pagenum">
       <div class="ph"><h2>添加页码</h2><p>选位置和样式，一键写入每一页。已旋转的页面也会摆正。</p></div>
       <label class="drop" id="drop-pagenum"><input type="file" accept="application/pdf,.pdf" multiple>
-        <b>点击选择，或把 PDF 拖到这里</b><span>免费版一次一个文件，Pro 可批量并打包 ZIP</span></label>
+        <b>点击选择，或把 PDF 拖到这里</b><span>可多选批量处理，多个文件自动打包 ZIP</span></label>
       <div class="work" hidden>
         <div class="bar"><span id="pn-info" class="muted"></span><span class="sp"></span>
           <button class="btn ghost" data-act="clear" type="button">换文件</button></div>
@@ -114,7 +112,7 @@
     <section class="panel" id="p-img">
       <div class="ph"><h2>图片转 PDF</h2><p>照片、截图、扫描件按顺序排成一份 PDF。手机拍照的方向会自动摆正。</p></div>
       <label class="drop" id="drop-img"><input type="file" accept="image/*" multiple>
-        <b>点击选择，或把图片拖到这里</b><span>JPG / PNG / WebP 等 · 免费版最多 20 张</span></label>
+        <b>点击选择，或把图片拖到这里</b><span>JPG / PNG / WebP 等 · 张数不限</span></label>
       <div class="work" hidden>
         <div class="bar"><span id="img-info" class="muted"></span><span class="sp"></span>
           <label class="btn ghost addmore">继续添加<input type="file" accept="image/*" multiple hidden></label>
@@ -131,29 +129,9 @@
     <div class="result" id="result" hidden><span class="ok">✓</span><span id="result-t"></span><a class="btn ghost" id="result-a" href="#">再次下载</a></div>
   </main>
 
-  <footer class="foot">文件只在本页内存里处理，不会上传，关掉页面即清空。 · 免费版单文件 20MB 以内、每天 10 次导出。</footer>
+  <footer class="foot">文件只在本页内存里处理，不会上传，关掉页面即清空。 · 完全免费，没有次数和大小限制（超大文件受浏览器内存限制）。</footer>
 </div>
 
-<div class="modal" id="modal" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-t">
-    <button class="x" id="m-x" type="button" aria-label="关闭">×</button>
-    <h3 id="m-t">页匠 Pro</h3>
-    <p class="muted" id="m-why">解除免费版限制，适合经常处理文件的人。</p>
-    <table class="cmp"><tr><th></th><th>免费</th><th>Pro</th></tr>
-      <tr><td>单文件大小</td><td>20MB</td><td>不限制</td></tr>
-      <tr><td>每天导出</td><td>10 次</td><td>不限次数</td></tr>
-      <tr><td>合并文件数</td><td>5 个</td><td>不限</td></tr>
-      <tr><td>图片转 PDF 张数</td><td>20 张</td><td>不限</td></tr>
-      <tr><td>批量加页码 / 按范围拆成多文件</td><td>—</td><td>✓ 打包 ZIP</td></tr>
-    </table>
-    <div id="m-state" class="state" hidden>当前已解锁 Pro。<button class="btn ghost" id="m-off" type="button">移除授权码</button></div>
-    <div id="m-form">
-      <label class="fld">授权码<input id="m-key" type="text" autocomplete="off" spellcheck="false" placeholder="PBOX-XXXX-XXXX-XXXX"></label>
-      <div class="actions"><span id="m-msg" class="muted"></span><button class="btn primary" id="m-ok" type="button">解锁</button></div>
-      <p class="hint">授权码只在本机校验并保存在浏览器里。购买入口暂未开通。</p>
-    </div>
-  </div>
-</div>
 <div class="busy" id="busy" hidden><div><i class="spin"></i><span id="busy-t">处理中…</span></div></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
