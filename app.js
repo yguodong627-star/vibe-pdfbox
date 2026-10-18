@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var PDFLib=window.PDFLib,pdfjsLib=window.pdfjsLib;
-pdfjsLib.GlobalWorkerOptions.workerSrc='lib/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc='vendor/pdf.worker.min.js';
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var uid=0,nid=function(){return 'i'+(++uid)};
@@ -115,7 +115,7 @@ function pickPdfs(files){var p=files.filter(isPdf);if(p.length<files.length)toas
 /* ---------- 标签 ---------- */
 $$('#tabs button').forEach(function(b){b.onclick=function(){
  $$('#tabs button').forEach(function(x){x.classList.toggle('on',x===b)});
- $$('.panel').forEach(function(p){p.classList.toggle('on',p.id==='p-'+b.dataset.tool)});$('#result').hidden=true;window.scrollTo(0,0)}});
+ $$('.panel').forEach(function(p){p.classList.toggle('on',p.id==='p-'+b.dataset.tool)});$('#result').hidden=true;window.scrollTo(0,Math.max(0,$('.app').offsetTop-70))}});
 
 /* ================= 合并 ================= */
 var M={items:[]},mSec=$('#p-merge');
@@ -344,4 +344,5 @@ $('#img-go').onclick=async function(){
 
 
 mRender();gRender();
+window.PB={$:$,$$:$$,busy:busy,tick:tick,toast:toast,deliver:deliver,deliverZip:deliverZip,show:show,bindDrop:bindDrop,pickPdfs:pickPdfs,loadPdfFile:loadPdfFile,pdfjsDoc:pdfjsDoc,drawPage:drawPage,baseName:baseName,fmtSize:fmtSize,zip:zip,parseRanges:parseRanges};
 })();
